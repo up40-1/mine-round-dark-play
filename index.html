@@ -1,14 +1,28 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mine-round-dark-play</title>
-    <meta name="description" content="Lovable Generated Project" />
+    <title>Mines Game - Test Your Luck</title>
+    <meta name="description" content="Experience the thrill of the mines game. Test your luck and win big!" />
     <meta name="author" content="Lovable" />
+    
+    <!-- PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Mines Game">
+    <meta name="theme-color" content="#7c3aed">
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Icons -->
+    <link rel="apple-touch-icon" href="/placeholder.svg">
+    <link rel="icon" href="/placeholder.svg">
 
-    <meta property="og:title" content="mine-round-dark-play" />
-    <meta property="og:description" content="Lovable Generated Project" />
+    <meta property="og:title" content="Mines Game - Test Your Luck" />
+    <meta property="og:description" content="Experience the thrill of the mines game. Test your luck and win big!" />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
 
@@ -22,5 +36,20 @@
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+              console.log('SW registered: ', registration);
+            })
+            .catch((registrationError) => {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
+    </script>
   </body>
 </html>
