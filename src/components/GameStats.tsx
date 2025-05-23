@@ -13,24 +13,26 @@ const GameStats = ({ balance, currentBet, multiplier, revealedTiles, gameState }
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-      <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 border border-gray-700 text-center">
+      <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 border border-gray-700 text-center transform transition-all duration-300 hover:scale-105 hover:shadow-lg">
         <p className="text-gray-400 text-sm mb-1">Balance</p>
         <p className={`text-xl font-bold ${balance >= 0 ? 'text-green-400' : 'text-red-400'}`}>
           €{balance.toFixed(2)}
         </p>
       </div>
       
-      <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 border border-gray-700 text-center">
+      <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 border border-gray-700 text-center transform transition-all duration-300 hover:scale-105 hover:shadow-lg">
         <p className="text-gray-400 text-sm mb-1">Current Bet</p>
         <p className="text-xl font-bold text-blue-400">€{currentBet.toFixed(2)}</p>
       </div>
       
-      <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 border border-gray-700 text-center">
+      <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 border border-gray-700 text-center transform transition-all duration-300 hover:scale-105 hover:shadow-lg">
         <p className="text-gray-400 text-sm mb-1">Multiplier</p>
-        <p className="text-xl font-bold text-yellow-400">{multiplier.toFixed(2)}x</p>
+        <p className={`text-xl font-bold text-yellow-400 ${gameState === 'playing' && multiplier > 1.5 ? 'animate-pulse' : ''}`}>
+          {multiplier.toFixed(2)}x
+        </p>
       </div>
       
-      <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 border border-gray-700 text-center">
+      <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 border border-gray-700 text-center transform transition-all duration-300 hover:scale-105 hover:shadow-lg">
         <p className="text-gray-400 text-sm mb-1">Safe Tiles</p>
         <p className="text-xl font-bold text-purple-400">{safeTilesRevealed}</p>
       </div>

@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
+import { playSound } from '../utils/sounds';
 
 interface BetPanelProps {
   balance: number;
@@ -36,6 +37,11 @@ const BetPanel = ({
     setBetInput(value);
     const numValue = parseFloat(value) || 0;
     setCurrentBet(Math.max(0, numValue));
+  };
+
+  const handleCashOut = () => {
+    playSound('cashout');
+    onCashOut();
   };
 
   const quickBetButtons = [10, 50, 100, 250, 500];
@@ -71,11 +77,12 @@ const BetPanel = ({
               variant="outline"
               size="sm"
               onClick={() => {
+                playSound('click');
                 setCurrentBet(amount);
                 setBetInput(amount.toString());
               }}
               disabled={gameState === 'playing'}
-              className="bg-gray-700 border-gray-600 hover:bg-gray-600 text-white"
+              className="bg-gray-700 border-gray-600 hover:bg-gray-600 text-white transition-colors"
             >
               {amount}
             </Button>
@@ -114,9 +121,11 @@ const BetPanel = ({
       <div className="space-y-3">
         {gameState === 'betting' && (
           <Button
-            onClick={onStartGame}
-            disabled={currentBet <= 0 || currentBet > balance}
-            className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-3 text-lg rounded-xl transition-all duration-300"
+            onClick={() => {
+              playSound('click');
+              onStartGame();
+            }}
+            className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-3 text-lg rounded-xl transition-all duration-300 active:scale-95"
           >
             Start Game
           </Button>
@@ -124,8 +133,8 @@ const BetPanel = ({
         
         {gameState === 'playing' && (
           <Button
-            onClick={onCashOut}
-            className="w-full bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white font-bold py-3 text-lg rounded-xl transition-all duration-300"
+            onClick={handleCashOut}
+            className="w-full bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white font-bold py-3 text-lg rounded-xl transition-all duration-300 active:scale-95"
           >
             Cash Out (€{potentialWin.toFixed(2)})
           </Button>
@@ -133,8 +142,11 @@ const BetPanel = ({
         
         {gameState === 'gameOver' && (
           <Button
-            onClick={onReset}
-            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-3 text-lg rounded-xl transition-all duration-300"
+            onClick={() => {
+              playSound('click');
+              onReset();
+            }}
+            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-3 text-lg rounded-xl transition-all duration-300 active:scale-95"
           >
             New Game
           </Button>
@@ -143,7 +155,7 @@ const BetPanel = ({
 
       {/* Balance Warning */}
       {balance < 0 && (
-        <div className="bg-red-600/20 border border-red-600 rounded-xl p-3 text-center">
+        <div className="bg-red-600/20 border border-red-600 rounded-xl p-3 text-center animate-pulse">
           <p className="text-red-400 font-bold">Negative Balance!</p>
           <p className="text-red-300 text-sm">You're in the red zone</p>
         </div>

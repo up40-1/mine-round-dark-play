@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { Bomb, Gem } from 'lucide-react';
+import { playSound } from '../utils/sounds';
 
 interface MinesGameProps {
   mineCount: number;
@@ -18,6 +19,7 @@ interface Tile {
 const MinesGame = ({ mineCount, gameState, onTileReveal }: MinesGameProps) => {
   const [tiles, setTiles] = useState<Tile[]>([]);
   const [revealedCount, setRevealedCount] = useState(0);
+  const [revealAnimation, setRevealAnimation] = useState<number | null>(null);
 
   // Initialize game board
   useEffect(() => {
@@ -60,22 +62,46 @@ const MinesGame = ({ mineCount, gameState, onTileReveal }: MinesGameProps) => {
     const tile = tiles[tileId];
     if (tile.isRevealed) return;
 
-    const newTiles = [...tiles];
-    newTiles[tileId].isRevealed = true;
-    setTiles(newTiles);
+    // Play sound immediately on click
+    playSound('click');
 
-    if (tile.isMine) {
-      // Reveal all mines
-      newTiles.forEach(t => {
-        if (t.isMine) t.isRevealed = true;
-      });
+    // Set animation state for the tile being revealed
+    setRevealAnimation(tileId);
+    
+    // Small delay to allow animation to show
+    setTimeout(() => {
+      const newTiles = [...tiles];
+      newTiles[tileId].isRevealed = true;
       setTiles(newTiles);
-      onTileReveal(true, revealedCount);
-    } else {
-      const newRevealedCount = revealedCount + 1;
-      setRevealedCount(newRevealedCount);
-      onTileReveal(false, newRevealedCount);
-    }
+
+      if (tile.isMine) {
+        // Play lose sound
+        playSound('lose');
+        
+        // Reveal all mines with cascading animation
+        newTiles.forEach((t, index) => {
+          if (t.isMine) {
+            setTimeout(() => {
+              const updatedTiles = [...newTiles];
+              updatedTiles[index].isRevealed = true;
+              setTiles(updatedTiles);
+            }, index * 100); // Cascade reveal animation
+          }
+        });
+        
+        onTileReveal(true, revealedCount);
+      } else {
+        // Play win sound 
+        playSound('win');
+        
+        const newRevealedCount = revealedCount + 1;
+        setRevealedCount(newRevealedCount);
+        onTileReveal(false, newRevealedCount);
+      }
+      
+      // Reset animation state
+      setRevealAnimation(null);
+    }, 200);
   };
 
   const renderTile = (tile: Tile) => {
@@ -101,11 +127,12 @@ const MinesGame = ({ mineCount, gameState, onTileReveal }: MinesGameProps) => {
           aspect-square rounded-xl border-2 border-gray-600 
           ${bgClass}
           transition-all duration-300 ease-in-out
-          transform hover:scale-105 active:scale-95
+          ${revealAnimation === tile.id ? 'scale-95' : 'transform hover:scale-105'}
+          ${tile.isRevealed ? 'animate-pulse' : ''}
           flex items-center justify-center
           shadow-lg hover:shadow-xl
-          ${tile.isRevealed ? 'animate-pulse' : ''}
           ${gameState === 'playing' && !tile.isRevealed ? 'cursor-pointer' : 'cursor-default'}
+          active:scale-95
         `}
       >
         {content}

@@ -1,8 +1,9 @@
 
 import { useState, useEffect } from 'react';
-import MinesGame from '../components/MinesGame';
 import BetPanel from '../components/BetPanel';
 import GameStats from '../components/GameStats';
+import GameTabs from '../components/GameTabs';
+import { playSound } from '../utils/sounds';
 
 const Index = () => {
   const [balance, setBalance] = useState(5000);
@@ -25,6 +26,15 @@ const Index = () => {
     localStorage.setItem('minesBalance', balance.toString());
   }, [balance]);
 
+  // Preload sounds
+  useEffect(() => {
+    const sounds = ['click', 'win', 'lose', 'cashout'];
+    sounds.forEach(sound => {
+      const audio = new Audio(`/sounds/${sound}.mp3`);
+      audio.preload = 'auto';
+    });
+  }, []);
+
   const calculateMultiplier = (revealed: number, mines: number) => {
     const safeTiles = 25 - mines;
     if (revealed === 0) return 1;
@@ -37,12 +47,11 @@ const Index = () => {
   };
 
   const startGame = () => {
-    if (balance >= currentBet) {
-      setBalance(balance - currentBet);
-      setGameState('playing');
-      setRevealedTiles(0);
-      setMultiplier(1);
-    }
+    // Allow going into negative balance if they want to bet more than they have
+    setBalance(balance - currentBet);
+    setGameState('playing');
+    setRevealedTiles(0);
+    setMultiplier(1);
   };
 
   const cashOut = () => {
@@ -71,9 +80,9 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 text-white p-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 text-white p-4 overflow-x-hidden">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-8">
+        <div className="text-center mb-8 animate-fade-in">
           <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent mb-2">
             MINES
           </h1>
@@ -82,7 +91,7 @@ const Index = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Bet Panel */}
-          <div className="lg:col-span-1 order-2 lg:order-1">
+          <div className="lg:col-span-1 order-2 lg:order-1 animate-fade-in">
             <BetPanel
               balance={balance}
               currentBet={currentBet}
@@ -98,19 +107,17 @@ const Index = () => {
           </div>
 
           {/* Game Area */}
-          <div className="lg:col-span-2 order-1 lg:order-2">
-            <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-700">
-              <MinesGame
-                mineCount={mineCount}
-                gameState={gameState}
-                onTileReveal={onTileReveal}
-              />
-            </div>
+          <div className="lg:col-span-2 order-1 lg:order-2 animate-fade-in">
+            <GameTabs
+              mineCount={mineCount}
+              gameState={gameState}
+              onTileReveal={onTileReveal}
+            />
           </div>
         </div>
 
         {/* Game Stats */}
-        <div className="mt-6">
+        <div className="mt-6 animate-fade-in">
           <GameStats
             balance={balance}
             currentBet={currentBet}
